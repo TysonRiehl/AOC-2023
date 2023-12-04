@@ -14,6 +14,7 @@ async function handler() {
             let c = parseInt(char);
             if (!isNaN(c)) {
                 if (first == null) {
+
                     first = c;
                 } else {
                     last = c;
@@ -44,6 +45,7 @@ async function handler() {
     const result = results.reduce((a, b) => {
         return a + b
     });
+    console.log(result);
 }
 
 

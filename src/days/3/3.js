@@ -16,7 +16,7 @@ async function handler() {
                 let validPartNumber = false;
                 for (let y = -1; y <= 1; y++) {
                     if (i + y < 0 || i + y >= lines.length) continue;
-                    for(let x = -1; x < pathLength && x + cIndex < line.length; x++) {
+                    for (let x = -1; x < pathLength && x + cIndex < line.length; x++) {
                         if (x + cIndex < 0) continue;
                         let theC = lines[i + y][x + cIndex];
                         if (isSymbol(theC)) {
@@ -55,7 +55,7 @@ function isSymbol(c) {
 function getPartLength(line, startIndex) {
     let ind = startIndex;
     let length = 1;
-    while(ind < line.length) {
+    while (ind < line.length) {
         if (line[ind] !== '.' && !isNaN(parseInt(line[ind]))) {
             length++;
         } else {

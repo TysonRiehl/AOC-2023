@@ -1,4 +1,3 @@
-
 const common = require('../../common')
 const rules = {red: 12, green: 13, blue: 14};
 

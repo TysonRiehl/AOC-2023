@@ -5,6 +5,7 @@ let bestLoc = 9999999999999999;
 // attempts 32266442 To High
 // 32256442 Too high
 // 32266442
+// 15880236
 async function handler() {
 
     const input = await common.loadInput('input.txt');
@@ -30,55 +31,98 @@ async function handler() {
 }
 
 function traverse(range, targetMapping, mapping) {
-    console.log("Traverse", JSON.stringify(range) + " " + JSON.stringify(targetMapping))
-    let hasMapped = false;
-
-
-    for (let i = 0; i < targetMapping.values.length; i++) {
-        if (targetMapping.to === 'soil') {
-            console.log('soil');
+    if (!targetMapping) {
+        console.log(range);
+        if (range.dest < 0) {
+            console.log("Broke")
         }
-        let targetRange = targetMapping.values[i];
-        // If we are above the minimum and below the max
-        let start1 = range.dest;
-        let end1 = range.dest + range.range;
-        let start2 = targetRange.source;
-        let end2 = targetRange.source + targetRange.range;
-
-        if (end2 >= start1 && start2 <= end1) {
-            let newStart = Math.max(start1, start2);
-            let newEnd = Math.min(end1, end2);
-
-            if (targetMapping.to === 'location') {
-                // console.log("In Range: " + newStart)
-                bestLoc = newStart < bestLoc ? newStart : bestLoc;
-                continue;
-            }
-
-            let diff = newStart - start2;
-            console.log(newStart, start2, targetRange.dest, diff, newEnd, newStart)
-
-            traverse({dest: targetRange.dest + diff, range: newEnd - newStart}, mapping[targetMapping.to], mapping)
-            if (end1 > end2) {
-                let newRange = {dest: newEnd, range: range.range - (newEnd - newStart)};
-                console.log("prev", range, targetRange, newRange, newEnd, newStart)
-                range = newRange
-            } else {
-                return;
-            }
-        } else {
-
-        }
-    }
-
-    if (targetMapping.to === 'location') {
-        // console.log("OUTSIDE RANGE: " + targetRange.source)
         bestLoc = range.dest < bestLoc ? range.dest : bestLoc;
         return;
     }
 
-    if (range.range <= 0) return;
-    traverse({dest: range.dest, range: range.range}, mapping[targetMapping.to], mapping)
+    // console.log("Traverse", JSON.stringify(range) + " " + JSON.stringify(targetMapping))
+
+    let targetIndex = 0;
+    while(range.range > 0) {
+        let targetRange = null;
+
+        if (targetIndex < targetMapping.values.length) {
+            targetRange = targetMapping.values[targetIndex];
+            targetIndex++;
+        }
+
+        if (targetRange) {
+            let start1 = range.dest;
+            let end1 = range.dest + range.range;
+            let start2 = targetRange.source;
+            let end2 = targetRange.source + targetRange.range;
+            if (start1 < start2) {
+                traverse({dest: range.dest, range: start2 - start1}, mapping[targetMapping.to], mapping);
+                range = {dest: range.dest + (start2 - start1), range: range.range - (start2 - start1)}
+                targetIndex--;
+            } else if (end2 >= start1 && start2 <= end1) {
+                let newStart = Math.max(start1, start2);
+                let newEnd = Math.min(end1, end2);
+                let diff = newStart - start2;
+                traverse({dest: targetRange.dest + diff, range: newEnd - newStart}, mapping[targetMapping.to], mapping)
+                range = {dest: newEnd, range: range.range - (newEnd - newStart)};
+            } else {
+                if (end1 < start2) {
+                    traverse({dest: range.dest, range: end1 - start2}, mapping[targetMapping.to], mapping);
+                    range = {dest: range.dest + (end1 - start2), range: range.range - (end1 - start2)}
+                }
+            }
+        } else {
+            traverse({dest: range.dest, range: range.range}, mapping[targetMapping.to], mapping);
+            range.range = 0;
+        }
+    }
+
+    // for (let i = 0; i < targetMapping.values.length; i++) {
+    //     if (targetMapping.to === 'soil') {
+    //         console.log('soil');
+    //     }
+    //     let targetRange = targetMapping.values[i];
+    //     // If we are above the minimum and below the max
+    //     let start1 = range.dest;
+    //     let end1 = range.dest + range.range;
+    //     let start2 = targetRange.source;
+    //     let end2 = targetRange.source + targetRange.range;
+    //
+    //     if (end2 >= start1 && start2 <= end1) {
+    //         let newStart = Math.max(start1, start2);
+    //         let newEnd = Math.min(end1, end2);
+    //
+    //         if (targetMapping.to === 'location') {
+    //             // console.log("In Range: " + newStart)
+    //             bestLoc = newStart < bestLoc ? newStart : bestLoc;
+    //             continue;
+    //         }
+    //
+    //         let diff = newStart - start2;
+    //         console.log(newStart, start2, targetRange.dest, diff, newEnd, newStart)
+    //
+    //         traverse({dest: targetRange.dest + diff, range: newEnd - newStart}, mapping[targetMapping.to], mapping)
+    //         if (end1 > end2) {
+    //             let newRange = {dest: newEnd, range: range.range - (newEnd - newStart)};
+    //             console.log("prev", range, targetRange, newRange, newEnd, newStart)
+    //             range = newRange
+    //         } else {
+    //             return;
+    //         }
+    //     } else {
+    //
+    //     }
+    // }
+    //
+    // if (targetMapping.to === 'location') {
+    //     // console.log("OUTSIDE RANGE: " + targetRange.source)
+    //     bestLoc = range.dest < bestLoc ? range.dest : bestLoc;
+    //     return;
+    // }
+    //
+    // if (range.range <= 0) return;
+    // traverse({dest: range.dest, range: range.range}, mapping[targetMapping.to], mapping)
 }
 
 

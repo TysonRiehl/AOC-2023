@@ -23,7 +23,7 @@ async function handler() {
     }
 
     for (let i = 0; i < seeds.length; i++) {
-        console.log("Starting seed: " + JSON.stringify(seeds[i]))
+        console.log("Starting seed: " + JSON.stringify(seeds[i]), "Current Best: " + bestLoc)
         traverse(seeds[i], mapping.seed, mapping);
     }
 
@@ -32,10 +32,6 @@ async function handler() {
 
 function traverse(range, targetMapping, mapping) {
     if (!targetMapping) {
-        console.log(range);
-        if (range.dest < 0) {
-            console.log("Broke")
-        }
         bestLoc = range.dest < bestLoc ? range.dest : bestLoc;
         return;
     }
